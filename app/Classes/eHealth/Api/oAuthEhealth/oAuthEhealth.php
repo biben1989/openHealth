@@ -24,19 +24,25 @@ class oAuthEhealth implements oAuthEhealthInterface
         if (!request()->has('code')) {
             return redirect()->route('login');
         }
+
         $code = request()->input('code');
+
         $this->authenticate($code);
 
         return redirect()->route('dashboard'); // Add this line
-
     }
 
     public function authenticate($code)
     {
+
+        $user = User::find(\session()->get('user_id_auth_ehealth'));
+        if (!$user) {
+           return redirect()->route('login');
+        }
         $data = [
             'token' => [
-                'client_id' => env('EHEALTH_CLIENT_ID'),
-                'client_secret' => env('EHEALTH_CLIENT_SECRET'),
+                'client_id' => $user->legalEntity->client_id ?? '',
+                'client_secret' => $user->legalEntity->client_secret ?? '',
                 'grant_type' => 'authorization_code',
                 'code' => $code,
                 'redirect_uri' => env('EHEALTH_REDIRECT_URI')
@@ -47,60 +53,49 @@ class oAuthEhealth implements oAuthEhealthInterface
 
         self::setToken($request);
 
-        $user = self::getUser();
-
         $this->login($user);
     }
 
-    public function login(array $email = []): void
-    {
-        $user = $this->findOrCreateUser($email);
 
-        $this->loginUser($user);
-    }
-
-    private function findOrCreateUser(array $data): User
-    {
-        $existingUser = User::where('email', $data['email'])->first();
-
-        if ($existingUser) {
-            return $existingUser;
-        }
-
-        $data['password'] = Hash::make(Str::random(16));
-
-        return User::create($data);
-    }
-
-    private function loginUser(User $user): void
+    public function login( $user): void
     {
         Auth::login($user);
         redirect()->route('dashboard');
     }
 
 
-    public static function loginUrl($email = '')
+    public static function loginUrl($user)
     {
-        $url = env('EHEALTH_AUTH_HOST') . '/sign-in?client_id=' . env('EHEALTH_CLIENT_ID') . '&redirect_uri=' . env('EHEALTH_REDIRECT_URI');
 
-        if (!empty($email)) {
-            $url .= '&email=' . $email;
+        $user->assignRole('Admin');
+        // Base URL and client ID
+        $baseUrl = env('EHEALTH_AUTH_HOST') . '/sign-in';
+        $redirectUri = env('EHEALTH_REDIRECT_URI');
+        // Base query parameters
+        $queryParams = [
+            'client_id' => $user->legalEntity->client_id ?? '',
+            'redirect_uri' => $redirectUri,
+            'response_type' => 'code'
+        ];
+        // Additional query parameters if email is provided
+        if (!empty($user->email)) {
+            $scope = $user->getAllPermissions()->unique()->pluck('name')->join( ' ');
+            $queryParams['email'] = $user->email;
+            $queryParams['scope'] = $scope;
         }
 
-        return $url;
+        \session()->put('user_id_auth_ehealth', $user->id);
+        // Build the full URL with query parameters
+        return $baseUrl . '?' . http_build_query($queryParams);
     }
-
     public static function setToken($data)
     {
-        // Устанавливаем токен аутентификации с временем жизни 1 минута
         Session::put('auth_token', $data['value']);
-        Session::put('auth_token_expires_at', now()->addMinutes(1));
+        Session::put('auth_token_expires_at', now()->addHours(1));
 
-        // Устанавливаем токен обновления с временем жизни 1 минута
         Session::put('refresh_token', $data['details']['refresh_token']);
-        Session::put('refresh_token_expires_at', now()->addMinutes(1));
+        Session::put('refresh_token_expires_at', now()->addHours(1));
 
-        // Сохраняем данные сессии
         Session::save();
     }
 
@@ -112,9 +107,9 @@ class oAuthEhealth implements oAuthEhealthInterface
     /**
      * @throws ApiException
      */
-    public function getUser(): array
+    public static function getUser(): array
     {
-        return (new Request('GET', self::OAUTH_USER, [], true))->sendRequest();
+        return (new Request('GET', self::OAUTH_USER, []))->sendRequest();
     }
 
     public static function forgetToken()
@@ -126,6 +121,11 @@ class oAuthEhealth implements oAuthEhealthInterface
         return redirect()->route('login');
 
     }
+
+    public function getApikey(): string{
+        return Auth::user()->api_key ?? '9df299abe8c7a24d581429e625b23324';
+    }
+
 
 }
 

@@ -19,7 +19,7 @@ class LegalEntitiesForms extends Form
         'owner.gender' => 'required|string',
         'owner.birth_date' => 'required|date',
         'owner.no_tax_id' => 'boolean',
-        'owner.tax_id' => 'exclude_if:owner.no_tax_id,true|required|integer|digits:10',
+        'owner.tax_id' => 'exclude_if:owner.no_tax_id,true|required|integer|digits_between:6,10',
         'owner.documents.type' => 'exclude_if:owner.no_tax_id,false|required|string',
         'owner.documents.number' => 'exclude_if:owner.no_tax_id,false|required|string',
         'owner.phones.*.number' => 'required|string:digits:13',
@@ -43,7 +43,16 @@ class LegalEntitiesForms extends Form
     #[Validate('required|email')]
     public string $email = '';
 
-    public ?array $addresses = [];
+
+//    #[Validate([
+//        'residence_address.area' => 'required',
+//        'residence_address.region' => 'required',
+//        'residence_address.settlement' => 'required',
+//        'residence_address.settlement_type' => 'required',
+//        'residence_address.street_type' => 'required',
+//    ])]
+
+    public ?array $residence_address = [];
 
     //TODO: validate acrreditation.category ?
 
@@ -106,7 +115,7 @@ class LegalEntitiesForms extends Form
 //     */
 //    public function rulesForAddress(): void
 //    {
-//        $this->validate($this->rulesForModel('residence_address')->toArray());
+//        $this->validate($this->rulesForModel('addresses')->toArray());
 //    }
 
     /**

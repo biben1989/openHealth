@@ -32,7 +32,7 @@ Route::post('/send-email', [EmailController::class, 'sendEmail'])->name('send.em
 
 
 Route::get('/ehealth/oauth/', [oAuthEhealth::class, 'callback'])->name('ehealth.oauth.callback');
-Route::get('/login', [LoginController::class, 'index'])->middleware('guest')->name('index.login');
+//Route::get('/login', [LoginController::class, 'index'])->middleware('guest')->name('index.login');
 Route::post('/login', [LoginController::class, 'login'])->middleware('guest')->name('login');
 
 Route::middleware([
@@ -47,7 +47,7 @@ Route::middleware([
 
     Route::get('/dashboard/legal-entities/create', CreateNewLegalEntities::class)->name('create.legalEntities');
 
-    Route::group(['middleware' => ['role:Owner']], function () {
+    Route::group(['middleware' => ['role:Owner|Admin']], function () {
         Route::prefix('legal-entities')->group(function () {
             Route::get('/edit', EditLegalEntity::class)->name('edit.legalEntities');
         });
