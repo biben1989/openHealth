@@ -81,4 +81,15 @@ class LegalEntity extends Model
         return $this->hasMany(Contract::class,'legal_entity_id','id');
     }
 
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+
+    public function getOwner()
+    {
+        return $this->employees->where('employee_type','OWNER')->first();
+    }
 }
