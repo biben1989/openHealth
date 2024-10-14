@@ -20,6 +20,10 @@ class DeclarationIndex extends Component
 
     public array $tableHeaders = [];
 
+    /**
+     * Employee filter
+     * @var array|string[]
+     */
     public array $employee_filter = [
         'full_name'     => '',
         'status'        => '',
@@ -34,7 +38,14 @@ class DeclarationIndex extends Component
         'page_size' => 10,
     ];
 
+    /**
+     * @var object|null
+     */
     public ?object $employees = null;
+
+    /**
+     * @var array|string[]
+     */
 
     public ?array $declarations_filter = [
         'number_declaration' => '',
@@ -46,8 +57,13 @@ class DeclarationIndex extends Component
         'phone'              => '',
     ];
 
+    /**
+     * @var object|null
+     */
     public ?object $declaration_show = null;
 
+
+    protected $listeners = ['searchUpdated'];
 
     public function mount()
     {
@@ -68,19 +84,21 @@ class DeclarationIndex extends Component
         ];
     }
 
-    public function showDeclaration($declaration)
+
+    //Livewire functions
+    public function showDeclaration($declaration): void
     {
         $this->declaration_show = new Declaration($declaration);
     }
 
-    public function closeDeclaration()
+    public function closeDeclaration(): void
     {
         $this->declaration_show = null;
     }
 
     public function updated($field): void
     {
-        if (in_array($field, $this->declarations_filter)) {
+        if (in_array($field, $this->declarations_filter) ) {
             $this->resetPage();
         }
     }
@@ -95,38 +113,41 @@ class DeclarationIndex extends Component
         }
     }
 
+
+    public function searchUpdated($searchData): void
+    {
+        $this->declarations_filter = $searchData;
+    }
+
+
     public function getDeclarations(): ?object
     {
-
-
         if (strlen($this->employee_filter['full_name']) > 3) {
             $query = Employee::doctor();
+
             $this->filterByEmployeeName($query, $this->employee_filter['full_name']);
         }
 
         return $this->filterDeclarations();
-
     }
 
     private function filterByEmployeeName($query, string $employeeName): void
     {
         $nameParts = explode(' ', $employeeName);
-        $firstName = $nameParts[0] ?? null;
-        $lastName = $nameParts[1] ?? null;
-        $secondName = $nameParts[2] ?? null;
-        $query->where(function ($query) use ($firstName, $lastName, $secondName) {
-            if (strlen($firstName) > 3) {
-                $query->where('party->first_name', 'ILIKE', "%$firstName%");
-            }
-            if (strlen($lastName) > 3) {
-                $query->where('party->last_name', 'ILIKE', "%$lastName%");
-            }
-            if (strlen($secondName) > 3) {
-                $query->where('party->second_name', 'ILIKE', "%$secondName%");
+        $fields = ['first_name', 'last_name', 'second_name'];
+        $query->where(function ($query) use ($nameParts, $fields) {
+            foreach ($nameParts as $index => $part) {
+                if (isset($part) && strlen($part) > 3) {
+                    $field = $fields[$index] ?? null;
+                    if ($field) {
+                        $query->where("party->$field", 'ILIKE', "%$part%");
+                    }
+                }
             }
         });
 
         $this->employees = $query->take(5)->get();
+
     }
 
     private function filterDeclarations($employee = null): ?object
@@ -136,10 +157,10 @@ class DeclarationIndex extends Component
             $employee = Employee::where('uuid', $this->employee_filter['employee_uuid'])->with('declarations')->first();
         }
 
-
         //  Get the employee by UUID
         if ($employee) {
             $declarations = $employee->declarations(); // Return the employee's declarations
+
         } else {
             $declarations = Declaration::query(); // Return all declarations
         }
@@ -189,6 +210,7 @@ class DeclarationIndex extends Component
     public function render()
     {
         $declarations = $this->getDeclarations();
+
         if (!$declarations) {
             $declarations = [];
         }

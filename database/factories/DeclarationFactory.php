@@ -137,7 +137,7 @@ class DeclarationFactory extends Factory
                 ]
             ],
             'reason' => $this->faker->text(10),
-            'reason_description' => $this->faker->text(30),
+            'reason_description' => $this->faker->text(255),
             'employee_id' => $this->employee->id ?? $this->faker->numberBetween([1, 1000000]),
             'declaration_request_id' => $this->faker->uuid,
 
