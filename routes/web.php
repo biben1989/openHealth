@@ -11,6 +11,7 @@ use App\Livewire\Division\DivisionIndex;
 use App\Livewire\Division\HealthcareServiceForm;
 use App\Livewire\Employee\EmployeeForm;
 use App\Livewire\Employee\EmployeeIndex;
+use App\Livewire\LegalEntity\LegalEntities;
 use App\Livewire\License\LicenseIndex;
 use App\Livewire\License\LicenseShow;
 use App\Livewire\License\Forms\LicenseForms;
@@ -51,15 +52,12 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 
-    Route::get('/dashboard/legal-entities/create', CreateNewLegalEntities::class)->name('create.legalEntities');
-    Route::prefix('legal-entities')->group(function () {
-        Route::get('/edit', EditLegalEntity::class)->name('edit.legalEntities');
-    });
+    Route::get('/legal-entities/create', LegalEntities::class)->name('create.legalEntities');
+
     Route::group(['middleware' => ['role:OWNER|ADMIN']], function () {
         Route::prefix('legal-entities')->group(function () {
-            Route::get('/edit', EditLegalEntity::class)->name('edit.legalEntities');
+            Route::get('/edit/{id?}', LegalEntities::class)->name('edit.legalEntities');
         });
-
         Route::prefix('division')->group(function () {
             Route::get('/', DivisionIndex::class)->name('division.index');
             Route::get('/form/{id?}', DivisionForm::class)->name('division.form');

@@ -2,13 +2,10 @@
 
 namespace App\Livewire\Declaration;
 
-use App\Classes\eHealth\Api\DeclarationApi;
-use App\Livewire\Declaration\forms\DeclarationRequestApi;
 use App\Models\Declaration;
 use App\Models\Employee;
-use Carbon\Carbon;
 use Database\Seeders\DeclarationSeeder;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -98,19 +95,23 @@ class DeclarationIndex extends Component
 
     public function updated($field): void
     {
+
         if (in_array($field, $this->declarations_filter) ) {
             $this->resetPage();
         }
     }
-
-
     //TODO: Remove function after testing
     public function callSeeder(): void
     {
         Declaration::truncate();
         if (!Declaration::count()) {
-            (new DeclarationSeeder)->run(1000);
+            $seeder = new DeclarationSeeder();
+            DB::transaction(function () use ($seeder) {
+                $seeder->run(1000);
+            });
+
         }
+
     }
 
 

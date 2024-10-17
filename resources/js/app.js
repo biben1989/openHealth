@@ -18,10 +18,7 @@ import Datepicker from 'flowbite-datepicker/Datepicker';
         weekStart: 1
     };
 }());
-// document.addEventListener('livewire:navigated', () => {
-//     initFlowbite();
-// })
-document.addEventListener('DOMContentLoaded', () => {
+const initializeDatepickers = () => {
     const datepickerElements = document.querySelectorAll('.default-datepicker');
 
     datepickerElements.forEach(element => {
@@ -33,15 +30,23 @@ document.addEventListener('DOMContentLoaded', () => {
         element.addEventListener('changeDate', function(event) {
             const selectedDate = event.target.value;
 
-            const wireModel = element.getAttribute('wire:model.live');
+            // Получаем значение wire:model
+            const wireModel = element.getAttribute('wire:model');
 
+            // Ищем ближайший компонент Livewire
             const componentId = element.closest('[wire\\:id]').getAttribute('wire:id');
 
+            // Устанавливаем значение через Livewire
             if (Livewire.find(componentId)) {
                 Livewire.find(componentId).set(wireModel, selectedDate);
             }
         });
     });
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    initializeDatepickers();
 });
 
 

@@ -83,13 +83,14 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function isClientId(): bool
     {
-        return $this->legalEntity->client_id  ?? false;
+        return $this->legalEntity->client_id ?? false;
     }
 
     public function licenses(): HasMany
     {
         return $this->hasMany(License::class, 'legal_entity_id', 'legal_entity_id');
     }
+
 
 
 }
