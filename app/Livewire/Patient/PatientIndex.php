@@ -8,7 +8,15 @@ use Livewire\Component;
 
 class PatientIndex extends Component
 {
-    public ? array $patients = null;
+    /**
+     * @var object|null
+     */
+    public ?object $patients = null;
+
+    /**
+     * @var object|null
+     */
+    public ?object $patient_show = null;
     public string $firstName = '';
     public string $lastName = '';
     public string $birthDate = '';

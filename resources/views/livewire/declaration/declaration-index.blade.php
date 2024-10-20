@@ -73,7 +73,7 @@
         <div class="overflow-x-auto">
             <div class="inline-block min-w-full align-middle">
                 <div class="overflow-hidden shadow">
-                    @if(count($declarations) > 0)
+                    @if($declarations && count($declarations) > 0)
                         <x-tables.table>
                             <x-slot name="headers" :list="$tableHeaders"></x-slot>
 
