@@ -2,8 +2,6 @@
 
 use App\Classes\eHealth\Api\oAuthEhealth\oAuthEhealth;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\EmailController;
-use App\Http\Controllers\HomeController;
 use App\Livewire\Auth\Login;
 use App\Livewire\Contract\ContractForm;
 use App\Livewire\Contract\ContractIndex;
@@ -13,14 +11,17 @@ use App\Livewire\Division\DivisionIndex;
 use App\Livewire\Division\HealthcareServiceForm;
 use App\Livewire\Employee\EmployeeForm;
 use App\Livewire\Employee\EmployeeIndex;
-use App\Livewire\LegalEntity\CreateNewLegalEntities;
-use App\Livewire\LegalEntity\EditLegalEntity;
-use App\Livewire\License\Forms\CreateNewLicense;
-use App\Livewire\License\Forms\LicenseForms;
+use App\Livewire\LegalEntity\LegalEntities;
 use App\Livewire\License\LicenseIndex;
 use App\Livewire\License\LicenseShow;
-use App\Livewire\Patient\PatientIndex;
+use App\Livewire\License\Forms\LicenseForms;
+use App\Livewire\License\Forms\CreateNewLicense;
+use App\Livewire\LegalEntity\CreateNewLegalEntities;
+use App\Livewire\LegalEntity\EditLegalEntity;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\EmailController;
+use App\Livewire\Patient\PatientIndex;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,11 +52,11 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 
-    Route::get('/dashboard/legal-entities/create', CreateNewLegalEntities::class)->name('create.legalEntities');
+    Route::get('/legal-entities/create', LegalEntities::class)->name('create.legalEntities');
 
     Route::group(['middleware' => ['role:OWNER|ADMIN']], function () {
         Route::prefix('legal-entities')->group(function () {
-            Route::get('/edit', EditLegalEntity::class)->name('edit.legalEntities');
+            Route::get('/edit/{id?}', LegalEntities::class)->name('edit.legalEntities');
         });
 
         Route::prefix('division')->group(function () {

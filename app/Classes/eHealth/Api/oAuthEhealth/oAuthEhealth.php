@@ -146,10 +146,14 @@ class oAuthEhealth implements oAuthEhealthInterface
 
     public static function forgetToken()
     {
-        Session::forget('auth_token');
-        Session::forget('auth_token_expires_at');
-        Session::forget('refresh_token');
-        Session::forget('refresh_token_expires_at');
+        if (Session::has('auth_token')){
+            Session::forget('auth_token');
+            Session::forget('auth_token_expires_at');
+            Session::forget('refresh_token');
+            Session::forget('refresh_token_expires_at');
+        }
+
+
         return redirect()->route('login');
 
     }

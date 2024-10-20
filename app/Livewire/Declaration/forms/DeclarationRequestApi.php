@@ -308,7 +308,5 @@ class DeclarationRequestApi extends DeclarationApi
             ]
         ];
 
-
     }
-
 }

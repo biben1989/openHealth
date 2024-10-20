@@ -169,8 +169,7 @@ class EmployeeIndex extends Component
 
     public function getEmployeeRequestsList()
     {
-        $requests = EmployeeRequestApi::getEmployeeRequestsList();
-        dd($requests);
+        return EmployeeRequestApi::getEmployeeRequestsList();
 
     }
 
@@ -193,7 +192,6 @@ class EmployeeIndex extends Component
                     $user->assignRole($request['employee_type']);
                     $user->save();
                 }
-
             }
             $employee =  Employee::updateOrCreate(
                 ['uuid'=> $request['id']],
