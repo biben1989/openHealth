@@ -45,7 +45,6 @@ class LegalEntities extends Component
      */
     protected string $entityCacheKey;
     protected string $ownerCacheKey;
-
     protected $listeners = ['addressDataFetched'];
 
     public ?array $steps = [
@@ -104,9 +103,8 @@ class LegalEntities extends Component
 
     public ?object  $file = null;
     /**
-     * @var array|null
+     * @var array|bool|mixed
      */
-    public ?array $getCertificateAuthority;
 
 
     public function rules(): array
@@ -140,8 +138,8 @@ class LegalEntities extends Component
     public function mount(): void
     {
 
-        if (Auth::user()->hasRole('OWNER')) {
-          $this->redirect('/legal-entity/edit');
+        if (!Auth::user()->hasRole('OWNER')) {
+          $this->redirect('/employee');
         }
         $this->getLegalEntity();
         $this->getDictionary();
@@ -421,8 +419,11 @@ class LegalEntities extends Component
 
     public function stepAddress(): void
     {
+
         $this->fetchDataFromAddressesComponent();
         $this->dispatch('address-data-fetched');
+
+
     }
 
     public function checkAndProceedToNextStep(): void

@@ -56,7 +56,7 @@ Route::middleware([
 
     Route::group(['middleware' => ['role:OWNER|ADMIN']], function () {
         Route::prefix('legal-entities')->group(function () {
-            Route::get('/edit/{id?}', LegalEntities::class)->name('edit.legalEntities');
+            Route::get('/edit/{id?}', EditLegalEntity::class)->name('edit.legalEntities');
         });
         Route::prefix('division')->group(function () {
             Route::get('/', DivisionIndex::class)->name('division.index');

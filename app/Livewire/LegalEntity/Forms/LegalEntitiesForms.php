@@ -14,7 +14,7 @@ class LegalEntitiesForms extends Form
 {
 
     public string $type = 'PRIMARY_CARE';
-    #[Validate(['required', 'integer','regex:/^\d{6}$|^\d{10}$/','unique:legal_entities,edrpou'])]
+    #[Validate(['required', 'regex:/^(\d{8,10}|[А-ЯЁЇІЄҐ]{2}\d{6})$/','unique:legal_entities,edrpou'])]
     public string $edrpou = '';
 
     #[Validate(
@@ -56,7 +56,6 @@ class LegalEntitiesForms extends Form
         'accreditation.category'   => 'required|string',
         'accreditation.order_no'   => 'required|string:min:2',
         'accreditation.order_date' => 'required|date',
-        'accreditation.issued_by'  => 'required|string|min:3',
         'accreditation.issued_date' => 'date',
         'accreditation.expiry_date' => 'date',
     ])]
@@ -91,6 +90,7 @@ class LegalEntitiesForms extends Form
 
     #[Validate([  'min:3', new Cyrillic()])]
     public ?string $beneficiary = '';
+
 
 
     public array $public_offer = [];

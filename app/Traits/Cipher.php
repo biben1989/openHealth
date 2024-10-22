@@ -17,6 +17,7 @@ trait Cipher
 
     public  string $password;
 
+    public mixed $getCertificateAuthority;
 
 
     protected function sendEncryptedData(array $data): string|array
@@ -50,13 +51,13 @@ trait Cipher
     public function getCertificateAuthority(): array
     {
         if (!Cache::has('knedp_certificate_authority')) {
-            $data = (new Request('get', '/certificateAuthority/supported', ''))->sendRequest();
+            $data= (new Request('get', '/certificateAuthority/supported', ''))->sendRequest();
             if ($data === false) {
                 throw new \RuntimeException('Failed to fetch data from the API.');
             }
-            Cache::put('knedp_certificate_authority', $data['ca'], now()->addDays(7));
+            $this->getCertificateAuthority =  Cache::put('knedp_certificate_authority', $data['ca'], now()->addDays(7));
         }
-        return Cache::get('knedp_certificate_authority');
+        return $this->getCertificateAuthority = Cache::get('knedp_certificate_authority');
     }
 
 }
