@@ -18,10 +18,10 @@
         </x-slot>
         @enderror
     </x-forms.form-group>
-    <x-forms.form-group class="xl:w-1/4">
+    <x-forms.form-group class="xl:w-1/2">
         <x-slot name="label">
-            <x-forms.label :isRequired="true" for="owner_first_name" class="default-label">
-                {{__('forms.first_name')}}
+            <x-forms.label for="owner_first_name" class="default-label">
+                {{__('forms.first_name')}} *
             </x-forms.label>
         </x-slot>
         <x-slot name="input">

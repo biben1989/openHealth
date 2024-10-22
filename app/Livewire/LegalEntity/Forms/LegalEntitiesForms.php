@@ -15,6 +15,7 @@ class LegalEntitiesForms extends Form
 
     public string $type = 'PRIMARY_CARE';
     #[Validate(['required', 'regex:/^(\d{8,10}|[А-ЯЁЇІЄҐ]{2}\d{6})$/','unique:legal_entities,edrpou'])]
+    #[Validate(['required', 'integer','regex:/^\d{6}$|^\d{10}$/','unique:legal_entities,edrpou'])]
     public string $edrpou = '';
 
     #[Validate(

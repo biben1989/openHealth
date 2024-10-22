@@ -1,6 +1,6 @@
 # Open Health
 Health Information System (Медична інформаційна система)
-## License & copyright 
+## License & copyright
 The software is distributed under [GPL version 3](https://www.gnu.org/licenses/gpl-3.0.en.html). Copyright &copy; 2023-2024 Iryna Loveiko, Vladislav Yevtushenko, Vitalii Bezsheiko
 ## Requirements
 * PHP 8.2+
@@ -18,7 +18,6 @@ composer install
 npm install
 npm run build
 cp .env.example .env
-php artisan key:generate
 ```
 ### Environment variables
 Before starting the application, see example of the [environment variables configuration](https://github.com/Vitaliy-1/openHealth/blob/main/.env.example).
@@ -62,3 +61,10 @@ CIPHER_API_URL=
 ```
 Application supports qualified digital signatures and uses [Cipher](https://caas.cipher.com.ua) as a service provider. See, Cipher [cryptographic API documentation](https://docs.cipher.com.ua/display/CCSUOS)
 ## Deployment
+```
+php artisan first-run
+```
+This command:
+* generates unique application API key (see API_KEY global variable),
+* creates tables
+* populates tables with data, such as roles and permissions

@@ -18,10 +18,10 @@ use App\Livewire\License\Forms\LicenseForms;
 use App\Livewire\License\Forms\CreateNewLicense;
 use App\Livewire\LegalEntity\CreateNewLegalEntities;
 use App\Livewire\LegalEntity\EditLegalEntity;
-use App\Livewire\SearchPatient;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\EmailController;
+use App\Livewire\Patient\PatientIndex;
 
 /*
 |--------------------------------------------------------------------------
@@ -91,5 +91,11 @@ Route::middleware([
         Route::get('/test-license', [HomeController::class, 'test']);
 
 
+    });
+
+    Route::group(['middleware' => ['role:OWNER|ADMIN|DOCTOR']], function () {
+        Route::prefix('patient')->group(function () {
+            Route::get('/', PatientIndex::class)->name('patient.index');
+        });
     });
 });

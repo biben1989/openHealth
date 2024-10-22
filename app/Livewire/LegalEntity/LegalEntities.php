@@ -179,6 +179,7 @@ class LegalEntities extends Component
             $this->legal_entity_form->owner = Cache::get($this->ownerCacheKey);
         }
 
+
     }
 
     public function addRowPhone($property): array
