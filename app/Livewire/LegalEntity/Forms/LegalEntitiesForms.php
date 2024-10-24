@@ -5,6 +5,7 @@ namespace App\Livewire\LegalEntity\Forms;
 use App\Models\User;
 use App\Rules\AgeCheck;
 use App\Rules\Cyrillic;
+use App\Rules\UniqueEdrpou;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Validate;
@@ -14,8 +15,8 @@ class LegalEntitiesForms extends Form
 {
 
     public string $type = 'PRIMARY_CARE';
-    #[Validate(['required', 'regex:/^(\d{8,10}|[А-ЯЁЇІЄҐ]{2}\d{6})$/','unique:legal_entities,edrpou'])]
-    #[Validate(['required', 'integer','regex:/^\d{6}$|^\d{10}$/','unique:legal_entities,edrpou'])]
+
+    #[Validate(['required', 'regex:/^(\d{8,10}|[А-ЯЁЇІЄҐ]{2}\d{6})$/',new UniqueEdrpou()])]
     public string $edrpou = '';
 
     #[Validate(
@@ -38,6 +39,7 @@ class LegalEntitiesForms extends Form
         'owner.email.unique' => 'Поле :attribute вже зарееєстровано в системі.',
         ]
     )]
+
     public ?array $owner = [];
 
     #[Validate([
@@ -46,7 +48,7 @@ class LegalEntitiesForms extends Form
     ])]
     public ?array $phones = [];
 
-    #[Validate('url|regex:/^(https?:\/\/)?([a-zA-Z0-9\-_]+\.)+[a-zA-Z]{2,}$/')]
+//    #[Validate('url|regex:/^(https?:\/\/)?([a-zA-Z0-9\-_]+\.)+[a-zA-Z]{2,}$/')]
     public string $website = '';
 
     #[Validate('required|email|regex:/^([a-z0-9+-]+)(.[a-z0-9+-]+)*@([a-z0-9-]+.)+[a-z]{2,6}$/ix')]
@@ -75,7 +77,7 @@ class LegalEntitiesForms extends Form
             'regex:/^(?!.*[ЫЪЭЁыъэё@$^#])[a-zA-ZА-ЯҐЇІЄа-яґїіє0-9№\"!\^\*)\]\[(&._-].*$/'
         ],
     ])]
-    public ?array $license = [];
+    public array|string $license = [];
 
     #[Validate([
         'archive.date'  => 'required_with:archive.place|date',

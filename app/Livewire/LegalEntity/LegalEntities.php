@@ -33,7 +33,7 @@ class LegalEntities extends Component
 
     public LegalEntitiesForms $legal_entity_form;
 
-    public LegalEntity $legalEntity;
+    public ?LegalEntity $legalEntity;
 
     public Employee $employee;
 
@@ -45,6 +45,7 @@ class LegalEntities extends Component
      */
     protected string $entityCacheKey;
     protected string $ownerCacheKey;
+
     protected $listeners = ['addressDataFetched'];
 
     public ?array $steps = [
@@ -137,10 +138,6 @@ class LegalEntities extends Component
 
     public function mount(): void
     {
-
-        if (!Auth::user()->hasRole('OWNER')) {
-          $this->redirect('/employee');
-        }
         $this->getLegalEntity();
         $this->getDictionary();
         $this->stepFields();
@@ -164,23 +161,44 @@ class LegalEntities extends Component
 
     public function getLegalEntity(): void
     {
-
-        // Search Legal entity in the cache by user ID
-        if (Cache::has($this->entityCacheKey)) {
-            $this->legalEntity = new LegalEntity();
-            $this->legalEntity->fill(Cache::get($this->entityCacheKey)->toArray());
+        // Try to get the LegalEntity from the cache
+        $this->legalEntity = $this->getLegalEntityFromAuth() ?? $this->getLegalEntityFromCache();
+        // If a LegalEntity is found, fill the form with its data
+        if ($this->legalEntity) {
             $this->legal_entity_form->fill($this->legalEntity->toArray());
-        } else {
-            // new Legal Entity clas
-            $this->legalEntity = new LegalEntity();
-        }
-        // Search Legal entity in the cache by user ID
-        if (Cache::has($this->ownerCacheKey)) {
-            $this->legal_entity_form->owner = Cache::get($this->ownerCacheKey);
         }
 
-
+        // Set the owner information from the cache if available
+        $this->setOwnerFromCache();
     }
+
+    private function getLegalEntityFromCache(): ?LegalEntity
+    {
+        // Check if the LegalEntity data exists in the cache
+        if (Cache::has($this->entityCacheKey)) {
+            $legalEntityData = Cache::get($this->entityCacheKey);
+            $legalEntity = new LegalEntity();
+            $legalEntity->fill($legalEntityData->toArray());
+
+            return $legalEntity; // Return the filled LegalEntity
+        }
+        return null; // Return null if not found
+    }
+
+    private function getLegalEntityFromAuth(): LegalEntity
+    {
+        // Return the authenticated user's LegalEntity or a new instance if it doesn't exist
+        return Auth::user()->legalEntity ?: new LegalEntity();
+    }
+
+    private function setOwnerFromCache(): void
+    {
+        // Check if the owner information is available in the cache
+        if (Cache::has($this->ownerCacheKey) && !Auth::user()->legalEntity) {
+            $this->legal_entity_form->owner = Cache::get($this->ownerCacheKey); // Set the owner
+        }
+    }
+
 
     public function addRowPhone($property): array
     {
@@ -203,6 +221,9 @@ class LegalEntities extends Component
 
     }
 
+    /**
+     * @throws ValidationException
+     */
     public function increaseStep(): void
     {
         $this->resetErrorBag();
@@ -217,6 +238,10 @@ class LegalEntities extends Component
 
     }
 
+    /**
+     * @param int $currentStep
+     * @return string
+     */
     public function getTitleByStep(int $currentStep): string
     {
         foreach ($this->steps as $step) {
@@ -247,6 +272,10 @@ class LegalEntities extends Component
         }
     }
 
+    /**
+     * @param int $step
+     * @return void
+     */
     public function changeStep(int $step): void
     {
         if (!$this->arePreviousStepsFilled($step)) {
@@ -255,6 +284,10 @@ class LegalEntities extends Component
         $this->currentStep = $step;
     }
 
+    /**
+     * @param int $step
+     * @return bool
+     */
     private function arePreviousStepsFilled(int $step): bool
     {
         foreach ($this->steps as $key => $stepData) {
@@ -278,6 +311,9 @@ class LegalEntities extends Component
         return null;
     }
 
+    /**
+     * @return void
+     */
     public function decreaseStep(): void
     {
         $this->resetErrorBag();
@@ -290,7 +326,7 @@ class LegalEntities extends Component
     /**
      * @throws ValidationException
      */
-    public function validateData(): bool|array|null
+    public function validateData(): ?array
     {
         return match ($this->currentStep) {
             1 => $this->stepEdrpou(),
@@ -458,7 +494,8 @@ class LegalEntities extends Component
     }
 
     public function updatedFile(): void{
-        $this->keyContainerUpload = $this->file ;
+        $this->validate($this->rules());
+        $this->keyContainerUpload = $this->file;
     }
 
 
@@ -560,7 +597,7 @@ class LegalEntities extends Component
     /**
      * Create a new legal entity based on the provided data.
      *
-     * @param array $data The data needed to create the legal entity.
+     * @param array $data  data needed to create the legal entity.
      * @return void
      */
     public function createLegalEntity(array $data): void
