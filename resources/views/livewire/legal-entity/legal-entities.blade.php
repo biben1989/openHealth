@@ -73,4 +73,6 @@
         </x-slot>
     </x-forms.forms-section>
     </div>
+
+    <x-forms.loading />
 </div>

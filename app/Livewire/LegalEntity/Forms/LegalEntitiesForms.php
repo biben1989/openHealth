@@ -85,7 +85,7 @@ class LegalEntitiesForms extends Form
 
     #[Validate([
         'license.type'             => 'required|string',
-        'license.issued_by'        => 'required|string|min:3',
+        'license.issued_by'        => ['required', 'string','min:3',new Cyrillic()],
         'license.issued_date'      => 'required|date|min:3',
         'license.active_from_date' => 'required|date|min:3',
         'license.order_no'         => 'required|string',

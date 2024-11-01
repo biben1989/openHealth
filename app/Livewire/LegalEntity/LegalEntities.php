@@ -2,7 +2,6 @@
 
 namespace App\Livewire\LegalEntity;
 
-use App\Classes\Cipher\Api\CipherApi;
 use App\Livewire\LegalEntity\Forms\LegalEntitiesForms;
 use App\Livewire\LegalEntity\Forms\LegalEntitiesRequestApi;
 use App\Mail\OwnerCredentialsMail;
@@ -229,27 +228,31 @@ class LegalEntities extends Component
             $legalEntityData = Cache::get($this->entityCacheKey);
             $legalEntity = new LegalEntity();
             $legalEntity->fill($legalEntityData->toArray());
-
             return $legalEntity; // Return the filled LegalEntity
         }
-        return null; // Return null if not found
+        return new LegalEntity(); // Return null if not found
     }
 
+    /**
+     * Get the legal entity associated with the currently authenticated user.
+     *
+     * @return LegalEntity|null
+     */
     private function getLegalEntityFromAuth(): ?LegalEntity
     {
-        /** @var User|null $user */
-
-        return auth()->user()->legalEntity;
+        return auth()->user()->legalEntity ?? null;
     }
 
+    /**
+     * Set the owner information from the cache if available.
+     */
     private function setOwnerFromCache(): void
     {
-        // Check if the owner information is available in the cache
+        // Check if the owner information is available in the cache and the user is not a legal entity
         if (Cache::has($this->ownerCacheKey) && !Auth::user()->legalEntity) {
-            $this->legal_entity_form->owner = Cache::get($this->ownerCacheKey); // Set the owner
+            $this->legal_entity_form->owner = Cache::get($this->ownerCacheKey); // Set the owner information from cache
         }
     }
-
 
     public function addRowPhone($property): array
     {
@@ -269,8 +272,8 @@ class LegalEntities extends Component
             unset($this->legal_entity_form->{$property}['phones'][$key]);
 
         }
-
     }
+
 
     /**
      * Increases the current step of the process.
@@ -403,10 +406,7 @@ class LegalEntities extends Component
         };
     }
 
-    public function register()
-    {
-        $this->stepPublicOffer();
-    }
+
 
     public function saveLegalEntityFromExistingData($data): void
     {
@@ -579,13 +579,13 @@ class LegalEntities extends Component
      */
     public function updatedFile(): void
     {
-        $this->keyContainerUpload = $this->file;
+        if (!empty($this->file)) {
+            $this->keyContainerUpload = $this->file;
+        }
     }
 
 
-    /**
-     * @throws ValidationException
-     */
+
     /**
      * Step for handling public offer submission.
      *
@@ -597,7 +597,7 @@ class LegalEntities extends Component
         $this->validate($this->rules());
 
         // Validate the legal entity form data
-        $this->legal_entity_form->validate();
+//        $this->legal_entity_form->validate();
 
         // Prepare data for public offer
         $this->legal_entity_form->public_offer = $this->preparePublicOffer();
