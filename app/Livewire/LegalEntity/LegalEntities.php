@@ -2,7 +2,6 @@
 
 namespace App\Livewire\LegalEntity;
 
-use App\Classes\Cipher\Api\CipherApi;
 use App\Livewire\LegalEntity\Forms\LegalEntitiesForms;
 use App\Livewire\LegalEntity\Forms\LegalEntitiesRequestApi;
 use App\Mail\OwnerCredentialsMail;
@@ -274,8 +273,8 @@ class LegalEntities extends Component
             unset($this->legal_entity_form->{$property}['phones'][$key]);
 
         }
-
     }
+
 
 
     /**
@@ -408,6 +407,7 @@ class LegalEntities extends Component
             default => [],
         };
     }
+
 
 
     public function saveLegalEntityFromExistingData($data): void
@@ -677,7 +677,7 @@ class LegalEntities extends Component
      */
     private function prepareDataForRequest(array $data): array
     {
-
+        // Converting documents to array
         if (isset($data['owner']['documents'])) {
             $data['owner']['documents'] = [$data['owner']['documents']];
         }
