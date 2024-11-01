@@ -593,11 +593,13 @@ class LegalEntities extends Component
      */
     public function stepPublicOffer(): void
     {
+
+
+        // Final Validate the legal entity form data
+        $this->legal_entity_form->validate();
+
         // Validate the form data based on defined rules
         $this->validate($this->rules());
-
-        // Validate the legal entity form data
-//        $this->legal_entity_form->validate();
 
         // Prepare data for public offer
         $this->legal_entity_form->public_offer = $this->preparePublicOffer();
