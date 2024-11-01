@@ -13,6 +13,10 @@
                                         this.$nextTick(() => {
                                             const firstErrorMessage = document.querySelector('.error-message')
 
+        <x-forms.forms-section submit="">
+{{--            <x-slot name="title">--}}
+{{--                <x-slot  name="title">{{ __('Редагувати заклад ') }}</x-slot>--}}
+{{--            </x-slot>--}}
                                             if (firstErrorMessage !== null) {
                                                 firstErrorMessage.scrollIntoView({ block: 'center', inline: 'center' })
                                             }
@@ -39,6 +43,7 @@
                             </x-button>
                         </div>
                     </div>
+
                 </div>
             </x-slot>
         </x-forms.forms-section>

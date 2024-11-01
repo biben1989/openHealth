@@ -2,6 +2,7 @@
 
 namespace App\Livewire\LegalEntity;
 
+use App\Classes\Cipher\Api\CipherApi;
 use App\Livewire\LegalEntity\Forms\LegalEntitiesForms;
 use App\Livewire\LegalEntity\Forms\LegalEntitiesRequestApi;
 use App\Mail\OwnerCredentialsMail;
@@ -228,9 +229,10 @@ class LegalEntities extends Component
             $legalEntityData = Cache::get($this->entityCacheKey);
             $legalEntity = new LegalEntity();
             $legalEntity->fill($legalEntityData->toArray());
+
             return $legalEntity; // Return the filled LegalEntity
         }
-        return new LegalEntity(); // Return null if not found
+        return null; // Return null if not found
     }
 
     /**
@@ -272,6 +274,7 @@ class LegalEntities extends Component
             unset($this->legal_entity_form->{$property}['phones'][$key]);
 
         }
+
     }
 
 
@@ -674,7 +677,7 @@ class LegalEntities extends Component
      */
     private function prepareDataForRequest(array $data): array
     {
-        // Converting documents to array
+
         if (isset($data['owner']['documents'])) {
             $data['owner']['documents'] = [$data['owner']['documents']];
         }
@@ -740,9 +743,9 @@ class LegalEntities extends Component
 
 
     /**
-     * Create or update a legal entity using the provided data.
+     * Create a new legal entity based on the provided data.
      *
-     * @param array $data The data to fill the legal entity with.
+     * @param array $data  data needed to create the legal entity.
      * @return void
      */
     public function createOrUpdateLegalEntity(array $data): void
@@ -762,9 +765,13 @@ class LegalEntities extends Component
             $this->legalEntity->fill($data['data']);
         }
 
-        // Set or update fields from the data
-        $this->legalEntity->uuid = $uuid;
+        // Set UUID from data or default to empty string
+        $this->legalEntity->uuid = $data['data']['id'] ?? '';
+
+        // Set client secret from data or default to empty string
         $this->legalEntity->client_secret = $data['urgent']['security']['client_secret'] ?? '';
+
+        // Set client id from data or default to null
         $this->legalEntity->client_id = $data['urgent']['security']['client_id'] ?? null;
 
         // Save or update the object in the database

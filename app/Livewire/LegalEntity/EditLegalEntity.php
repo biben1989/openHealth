@@ -86,7 +86,9 @@ class EditLegalEntity extends LegalEntities
     //TODO: Call request to update legal entity
     public function updateLegalEntity(): void
     {
-        $this->signLegalEntity();
+        $this->resetErrorBag();
+        $this->validateUpdateLegalEntity();
+        $this->stepPublicOffer();
         //TODO: Call request to update legal entity
     }
 
