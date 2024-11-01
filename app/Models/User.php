@@ -15,6 +15,11 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Spatie\Permission\Traits\HasRoles;
 use App\Models\License;
 
+
+/**
+ * @property LegalEntity|null $legalEntity
+ *
+ */
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens;
@@ -78,7 +83,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function legalEntity(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(LegalEntity::class, 'legal_entity_id', 'id');
+        return $this->belongsTo(LegalEntity::class);
     }
 
     public function isClientId(): bool
@@ -90,4 +95,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(License::class, 'legal_entity_id', 'legal_entity_id');
     }
+
+
+
 }
