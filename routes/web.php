@@ -49,10 +49,11 @@ Route::middleware([
 ])->group(function () {
 
     Route::get('/dashboard', function () {
+
         return view('dashboard');
     })->name('dashboard');
 
-    Route::get('/legal-entities/create', LegalEntities::class)->name('create.legalEntities');
+    Route::get('/dashboard/legal-entities/create', LegalEntities::class)->name('create.legalEntities');
 
     Route::group(['middleware' => ['role:OWNER|ADMIN'],'prefix' => 'dashboard'], function () {
         Route::prefix('legal-entities')->group(function () {
