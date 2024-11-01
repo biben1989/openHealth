@@ -82,12 +82,8 @@ class EditLegalEntity extends LegalEntities
 //        return  EmployeeRequestApi::getEmployeeRequestsList(['legal_entity', $this->legalEntity->uuid]);
     }
 
-    public function validateUpdateLegalEntity(): void
-    {
-        $this->validate($this->rules());
 
-    }
-
+    //TODO: Call request to update legal entity
     public function updateLegalEntity(): void
     {
         $this->stepPublicOffer();
