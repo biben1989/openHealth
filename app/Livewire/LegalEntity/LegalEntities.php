@@ -409,7 +409,6 @@ class LegalEntities extends Component
     }
 
 
-
     public function saveLegalEntityFromExistingData($data): void
     {
 
