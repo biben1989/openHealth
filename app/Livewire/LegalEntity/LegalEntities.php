@@ -407,7 +407,6 @@ class LegalEntities extends Component
     }
 
 
-
     public function saveLegalEntityFromExistingData($data): void
     {
 
@@ -585,21 +584,24 @@ class LegalEntities extends Component
     }
 
 
-
     /**
-     * Step for handling public offer submission.
+     * Step for handling sing legal entity  submission.
      *
      * @throws ValidationException
      */
-    public function stepPublicOffer(): void
+    public function signLegalEntity(): void
     {
 
 
         // Final Validate the legal entity form data
         $this->legal_entity_form->validate();
-
+        if ($this->getErrorBag()->isNotEmpty()) {
+            // Відправляємо подію для скролу
+            $this->dispatchBrowserEvent('scroll-to-error');
+        }
         // Validate the form data based on defined rules
         $this->validate($this->rules());
+
 
         // Prepare data for public offer
         $this->legal_entity_form->public_offer = $this->preparePublicOffer();
@@ -624,20 +626,18 @@ class LegalEntities extends Component
             'signed_legal_entity_request' => $base64Data,
             'signed_content_encoding'     => 'base64',
         ]);
-
         // Handle errors from API request
         if (isset($request['errors']) && is_array($request['errors'])) {
-            $this->dispatchErrorMessage(__('An unknown error occurred'), $request['errors']);
+            $this->dispatchErrorMessage(__('Запис не було збережено'), $request['errors']);
             return;
         }
 
         // Handle successful API request
-        if (!empty($request)) {
+        if (!empty($request['data'])) {
             $this->handleSuccessResponse($request);
         }
-
         // Dispatch error message for unknown errors
-        $this->dispatchErrorMessage(__('An unknown error occurred'), $request['errors']);
+        $this->dispatchErrorMessage(__('Не вдалося отримати відповідь'));
     }
 
     /**
@@ -713,12 +713,29 @@ class LegalEntities extends Component
      */
     private function handleSuccessResponse(array $request): void
     {
-        $this->createLegalEntity($request);
-        $this->createUser();
-        $this->createLicense($request['data']['license']);
-        Cache::forget($this->entityCacheKey);
-        Cache::forget($this->ownerCacheKey);
-        $this->redirect('/legal-entities/edit');
+
+        try {
+            $this->createOrUpdateLegalEntity($request);
+            if (!\auth()->user()->legalEntity->getOwner()->exists()) {
+                $this->createUser();
+            }
+            if (isset($request['data']['license'])) {
+                $this->createLicense($request['data']['license']);
+            } else {
+                $this->dispatchErrorMessage(__('Ліцензійні дані відсутні'));
+                return;
+            }
+            if (Cache::has($this->entityCacheKey)) {
+                Cache::forget($this->entityCacheKey);
+            }
+            if (Cache::has($this->ownerCacheKey)) {
+                Cache::forget($this->ownerCacheKey);
+            }
+            $this->redirect('/legal-entities/edit');
+        } catch (\Exception $e) {
+            $this->dispatchErrorMessage(__('Сталася помилка під час обробки запиту'), ['error' => $e->getMessage()]);
+            return;
+        }
     }
 
 
@@ -733,6 +750,10 @@ class LegalEntities extends Component
         // Get the UUID from the data, if it exists
         $uuid = $data['data']['id'] ?? '';
 
+        if (empty($uuid)) {
+            $this->dispatchErrorMessage(__('Невдалось створити Юридичну особу'), ['errors' => 'No UUID found in data']);
+            return;
+        }
         // Find or create a new LegalEntity object by UUID
         $this->legalEntity = LegalEntity::firstOrNew(['uuid' => $uuid]);
 
@@ -776,7 +797,6 @@ class LegalEntities extends Component
                 'password' => Hash::make($password),
             ]);
         }
-
         // Associate the legal entity with the user
         $user->legalEntity()->associate($this->legalEntity);
         $user->save();
@@ -798,20 +818,19 @@ class LegalEntities extends Component
      */
     public function createLicense(array $data): void
     {
-        $license = new License();
-
+        $license = License::firstOrNew(['uuid' => $data['id']]);
         $license->fill($data);
-        $license->legal_entity_id = $this->legalEntity->id;
+        $license->uuid = $data['id'];
         $license->is_primary = true;
-        $license->save();
-        $license->legalEntity()->associate($this->legalEntity);
+        if (isset($this->legalEntity)) {
+            $this->legalEntity->licenses()->save($license);
+        }
     }
 
 
     // Fetch data from Addresses component
     public function fetchDataFromAddressesComponent(): void
     {
-
         $this->dispatch('fetchAddressData');
     }
 
