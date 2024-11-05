@@ -75,11 +75,11 @@ class LegalEntitiesForms extends Form
 
     public ?array $residence_address = [];
     #[Validate([
-        'accreditation.category'    => 'required|string',
-        'accreditation.order_no'    => 'required|string:min:2',
-        'accreditation.order_date'  => 'required|date',
-        'accreditation.issued_date' => 'date',
-        'accreditation.expiry_date' => 'date',
+        'accreditation.category' => ['required_with:accreditation.order_no,accreditation.order_date,accreditation.issued_date,accreditation.expiry_date', 'string'],
+        'accreditation.order_no' => ['required_with:accreditation.category,accreditation.order_date,accreditation.issued_date,accreditation.expiry_date', 'string', 'min:2'],
+        'accreditation.order_date' => ['required_with:accreditation.category,accreditation.order_no,accreditation.issued_date,accreditation.expiry_date', 'date'],
+        'accreditation.issued_date' => ['nullable', 'date'],
+        'accreditation.expiry_date' => ['nullable', 'date'],
     ])]
     public ?array $accreditation = [];
 
