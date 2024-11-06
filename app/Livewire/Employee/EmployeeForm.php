@@ -29,8 +29,6 @@ class EmployeeForm extends Component
     const CACHE_PREFIX = 'register_employee_form';
 
     public EmployeeFormRequest $employee_request;
-
-
     protected string $employeeCacheKey;
 
     public Employee $employee;
