@@ -48,12 +48,16 @@ class EditLegalEntity extends LegalEntities
      */
     public function getArchiveForm(): void
     {
+
         // Extracting only 'date' and 'place' fields from the first element of the archive
-        $this->legal_entity_form->archive = Arr::only($this->legal_entity_form->archive[0],
-            [
-                'date',
-                'place',
-            ]);
+        if (!empty($this->legal_entity_form->archive)) {
+            $this->legal_entity_form->archive = Arr::only($this->legal_entity_form->archive[0],
+                [
+                    'date',
+                    'place',
+                ]);
+        }
+
     }
 
 
