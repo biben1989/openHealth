@@ -111,9 +111,9 @@ class LegalEntity extends Model
 
 
     // Get Owner Legal Entity
-    public function getOwner():object
+    public function getOwner():?object
     {
-       return $this->employees->where('employee_type', 'OWNER')->first();
+        return $this->employees()->where('employee_type', 'OWNER')->first();
     }
 
     public function getActiveDivisions():Collection
