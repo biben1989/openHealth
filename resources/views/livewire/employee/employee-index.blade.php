@@ -27,7 +27,7 @@
                     </x-forms.form-group>
                 </div>
                 <div class="button-group border-0 ">
-                    <a href="{{route('employee.form')}}" type="button"
+                    <a href="{{route('employee.form',['store_id' => $storeId])}}" type="button"
                             class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
                         {{__('Додати Співробітника')}}
                     </a>
@@ -41,14 +41,13 @@
         </x-slot>
     </x-section-navigation>
 
-    <div class="flex flex-col h-screen	">
+    <div class="flex flex-col h-screen">
         <div class="overflow-x-auto">
             <div class="inline-block min-w-full align-middle">
                 <div class="overflow-hidden shadow">
                     @if(count($employees) > 0)
                         <x-tables.table>
                             <x-slot name="headers" :list="$tableHeaders"></x-slot>
-
                             <x-slot name="tbody">
                                 @if($employees)
                                     @foreach($employees as $k=>$employee)
@@ -69,7 +68,7 @@
                                             </td>
                                             <td x-data="{open: false}" class="border-b border-[#eee] py-5 px-4 ">
                                                 @if($employee->email)
-                                                <p class="text-black dark:text-white">{{$employee->email}}</p>
+                                                    <p class="text-black dark:text-white">{{$employee->email}}</p>
                                                 @else
                                                     <x-button x-on:click="open = ! open" class="text-left">Додати пошту</x-button>
                                                 @endif
@@ -133,7 +132,6 @@
                                                                class="flex items-center gap-2 w-full first-of-type:rounded-t-md last-of-type:rounded-b-md px-4 py-2.5 text-left text-sm hover:bg-gray-50 disabled:text-gray-500">
                                                                 {{__('forms.edit')}}
                                                             </a>
-
                                                             <a wire:click="showModalDismissed({{$employee->id}})"
                                                                class="flex items-center gap-2 w-full first-of-type:rounded-t-md last-of-type:rounded-b-md px-4 py-2.5 text-left text-sm hover:bg-gray-50 disabled:text-gray-500">
                                                                 {{__('forms.dismissed')}}

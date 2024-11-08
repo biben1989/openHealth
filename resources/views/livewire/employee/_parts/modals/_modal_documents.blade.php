@@ -81,7 +81,7 @@
                                         </x-forms.label>
                                     </x-slot>
                                     <x-slot name="input">
-                                        <x-forms.input class="default-input" id="document_issued_at"  wire:model="employee_request.documents.issued_at" type="date"
+                                        <x-forms.input-date  id="document_issued_at"  wire:model="employee_request.documents.issued_at"
                                                        />
                                     </x-slot>
                                     @error('employee_request.documents.issued_at')
@@ -92,7 +92,6 @@
                                     </x-slot>
                                     @enderror
                                 </x-forms.form-group>
-
                             </x-forms.form-row>
                             <x-forms.form-row class="mb-4.5 mt-4.5 flex flex-col gap-6 xl:flex-row justify-between items-center ">
                                 <div  class="xl:w-1/4 text-left">
@@ -101,7 +100,7 @@
                                     </x-secondary-button>
                                 </div>
                                 <div class="xl:w-1/4 text-right">
-                                    <x-button type="submit" class="btn-primary">
+                                    <x-button type="submit" class="default-button">
                                         {{__('forms.save')}}
                                     </x-button>
                                 </div>
