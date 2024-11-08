@@ -19,7 +19,7 @@
     x-on:keydown.escape.window="show = false"
     x-show="show"
     id="{{ $id }}"
-    class="jetstream-modal fixed inset-0 z-50 flex items-center justify-center px-4 py-6 sm:px-0"
+    class="fixed inset-0 z-50 flex items-center justify-center px-4 py-6 sm:px-0"
     style="display: none;"
 >
     <!-- Overlay -->
@@ -31,7 +31,6 @@
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0">
     </div>
-
     <!-- Modal Content -->
     <div x-show="show" class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-auto transform transition-all {{ $maxWidth }}"
          x-trap.inert.noscroll="show"

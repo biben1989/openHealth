@@ -88,13 +88,6 @@ class EmployeeIndex extends Component
         ];
     }
 
-    // TODO: remove method
-    public function create()
-    {
-        return redirect()->route('employee.form', ['store_id' => $this->storeId]);
-    }
-
-
     public function sortEmployees():void
     {
         if ($this->selectedOption === 'is_active') {
